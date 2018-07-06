@@ -35,7 +35,7 @@ bool check_edge(int src, pair<int,int> &dest, bool &flip){
 }
 // gcc+ doesnt not support VLA( used in c99). Forced to use single pointer
 int recurse_find_dial_max(vector<pair<pair<int,int>,int>>& wts, int money, int rows, int cols, int prev_edge_index, int* arr, bool& flip){
-	if(money<=0)
+	if(money<0)
 		return 0;
 	if(prev_edge_index ==-1){
 		//Memoization doesnt matter for -1 index.
@@ -81,7 +81,9 @@ int recurse_find_dial_max(vector<pair<pair<int,int>,int>>& wts, int money, int r
 int dial_maximum(vector<pair<pair<int,int>,int>>& wts, int money){
 	int prev_edge_index = -1;
 	int no_dials = 10;
+	// static initialization may not be 0 so memset is must
 	int dial_arr[money+1][no_dials] = {0};
+	memset(dial_arr, 0, sizeof(dial_arr[0][0]) * (money+1) * 10);
 	bool flip = false;
 	return recurse_find_dial_max(wts,money, money+1, no_dials, prev_edge_index, (int*)dial_arr,flip);
 	
