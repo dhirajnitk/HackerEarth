@@ -20,6 +20,49 @@ class DialMaximum{
                 return false;
             }
         }
+    private static int dialGreedy(ArrayList<Pair<Pair <Integer, Integer>,Integer>> wts, int money){
+        int prevEdgeIndex = -1;
+        int noDials = 10;
+        int [][] dialArr = new int[money+1][noDials];
+        BooleanHolder  flip = new BooleanHolder(false);
+        return greedyDialMax(wts, money,prevEdgeIndex,dialArr, flip);
+    }
+    private static int greedyDialMax(ArrayList<Pair<Pair <Integer, Integer>,Integer>> wts, int money, int prevEdgeIndex, int [][] arr, BooleanHolder flip){
+        int finalvalue = 0;
+        int wt = 0;// Highest weight's index
+        while(true)
+        {
+            flip.value = false;
+            if(prevEdgeIndex ==-1){
+
+                if (money>=0)
+                {
+                    finalvalue += wts.get(wt).getKey().getValue();
+                }
+                prevEdgeIndex = wts.get(wt).getKey().getValue();
+            }
+            else if (money-wts.get(wt).getValue() >=0 && checkEdge(prevEdgeIndex, wts.get(wt).getKey(), flip)){
+                if(flip.value){
+                    money -= wts.get(wt).getValue();
+                    finalvalue += wts.get(wt).getKey().getKey();
+                    prevEdgeIndex= wts.get(wt).getKey().getKey();
+                }
+                else{
+                    money -= wts.get(wt).getValue();
+                    finalvalue += wts.get(wt).getKey().getValue();
+                    prevEdgeIndex= wts.get(wt).getKey().getValue();
+                }
+
+            }
+            else{
+                wt++;
+            }
+            if(money == 0 || wt ==wts.size())
+                break;
+        }
+ 
+    return finalvalue;
+    }
     private static int recurseFindDialMax(ArrayList<Pair<Pair <Integer, Integer>,Integer>> wts, int money, int prevEdgeIndex, int [][] arr, BooleanHolder flip){
         if(money<0)
             return 0;
@@ -58,7 +101,7 @@ class DialMaximum{
                         }
                     }
                 }
-                System.out.println(arr[money][prevEdgeIndex]);
+                //System.out.println(arr[money][prevEdgeIndex]);
                 return arr[money][prevEdgeIndex];
             }
 
@@ -85,30 +128,31 @@ class DialMaximum{
             wts.add(wt);
         }
     	*/
-        int money = 0;
+        int money = 15;
         int x , y ,w;
         ArrayList<Pair<Pair <Integer, Integer>,Integer>> wts = new ArrayList<>(12);
-        wts.add(new Pair<>(new  Pair<>(1,2),2));
-        wts.add(new Pair<>(new  Pair<>(1,4),10));
-        wts.add(new Pair<>(new  Pair<>(4,7),10));
-        wts.add(new Pair<>(new  Pair<>(2,3),10));
-        wts.add(new Pair<>(new  Pair<>(2,5),10));
-        wts.add(new Pair<>(new  Pair<>(5,8),10));
-        wts.add(new Pair<>(new  Pair<>(3,6),10));
-        wts.add(new Pair<>(new  Pair<>(6,9),10));
-        wts.add(new Pair<>(new  Pair<>(4,5),10));
-        wts.add(new Pair<>(new  Pair<>(5,6),10));
-        wts.add(new Pair<>(new  Pair<>(7,8),10));
-        wts.add(new Pair<>(new  Pair<>(8,9),10));
-	    // Displaying ArrayList 
-        //System.out.println(wts);
-        // sorting the wts by w
-        Collections.sort(wts, (first,second) -> first.getValue() - second.getValue());
-        //System.out.println(wts);
-        Instant startInstant = Instant.now();
-		int maximum = dialMaximum(wts, money); 
-        Instant stopInstant = Instant.now();
-		System.out.println(maximum);
-        System.out.println("Time taken: " + Duration.between( startInstant , stopInstant ).toMillis()/1000d + "  seconds / " +Duration.between( startInstant , stopInstant ).toNanos()+" ns");
+        wts.add(new Pair<>(new  Pair<>(1,2),1));
+        wts.add(new Pair<>(new  Pair<>(1,4),1));
+        wts.add(new Pair<>(new  Pair<>(4,7),1));
+        wts.add(new Pair<>(new  Pair<>(2,3),1));
+        wts.add(new Pair<>(new  Pair<>(2,5),1));
+        wts.add(new Pair<>(new  Pair<>(5,8),1));
+        wts.add(new Pair<>(new  Pair<>(3,6),1));
+        wts.add(new Pair<>(new  Pair<>(6,9),1));
+        wts.add(new Pair<>(new  Pair<>(4,5),1));
+        wts.add(new Pair<>(new  Pair<>(5,6),1));
+        wts.add(new Pair<>(new  Pair<>(7,8),1));
+        wts.add(new Pair<>(new  Pair<>(8,9),1));
+        // sorting the wts decreasing order of (src+dest)/w to be used for greedy approach
+        Collections.sort(wts, (first,second) -> Float.compare((float)(second.getKey().getKey() + second.getKey().getValue())/second.getValue(), (float)(first.getKey().getKey() + first.getKey().getValue())/first.getValue()));
+        System.out.println(wts);
+        Instant startInstant1 = Instant.now();
+		int maximum1 = dialMaximum(wts, money); 
+        Instant stopInstant1 = Instant.now();
+        Instant startInstant2 = Instant.now();
+        int maximum2 = dialGreedy(wts, money);
+        Instant stopInstant2 = Instant.now();
+        System.out.println("Maximum: "+maximum1+ " Time taken By DP: " + Duration.between( startInstant1 , stopInstant1 ).toMillis()/1000d + "  seconds / " +Duration.between( startInstant1 , stopInstant1 ).toNanos()+" ns");
+        System.out.println("Maximum: "+maximum2+ " Time taken By Greedy: " + Duration.between( startInstant2 , stopInstant2 ).toMillis()/1000d + "  seconds / " +Duration.between( startInstant2 , stopInstant2 ).toNanos()+" ns");
     }
 }
